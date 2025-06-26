@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+   <!-- External libraries -->
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Add OpenLayers library -->
+<script src="https://cdn.jsdelivr.net/npm/ol@6.10.0/dist/ol.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@6.10.0/dist/ol.css" type="text/css">
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<!-- Leaflet Control Geocoder CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+  <style>
+     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        * {
+            font-size: 13px;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            line-height: 1.5;
+            font-family: 'Poppins', sans-serif;
+
+        }
+        body {
+            background-color: whitesmoke;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            opacity: 100%;
+            background: linear-gradient(to right, whitesmoke, whitesmoke);
+        
+        }
+
+    /* Sidebar styles */
+    .sidebar {
+      width: 200px;
+      background-color:white;
+      color:black;
+      position: fixed;
+      height: 100%;
+      overflow: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .content{
+        max-width: 1175px;
+        width: 100%;
+      
+    }
+
+    .sidebar a {
+      padding: 10px;
+      text-decoration: none;
+      color:black;
+      display: block; 
+      
+ 
+    }
+
+    .sidebar a:hover {
+      background-color:rgb(82, 138, 82);
+
+    }
+
+    .content {
+      margin-left: 170px;
+      padding: 0px;
+    }
+
+    /* Collapsible sections styles */
+    .collapsible {
+      background-color:white;
+      color:black;
+      padding: 10px;
+      cursor: pointer;
+      border: none;
+      text-align: left;
+      outline: none;
+      width: 100%;
+      font-weight: 100;
+      
+      
+     
+    }
+
+    .collapsible:hover {
+      background-color:greenyellow;
+      width: 100%;
+    }
+
+    .content-collapsible {
+      display: none;
+      padding: 10px;
+      background-color: white;
+      padding: 0 18px;
+      display: none;
+      overflow: hidden;
+    }
+    .dash{
+      background-color: rgb(103, 185, 147);
+      padding-left: 40px;
+      padding-top: 5px;
+      height: 30px;
+      font-size: 13px;
+      width: 1180;
+      font-weight: bold;
+    }
+      
+    /* Search bar, user profile, and settings styles */
+    .topbar {
+      background-color:whitesmoke;
+      color: black;
+      align-items: center;
+      padding: 1px;
+      display: flex;
+      justify-content: space-between;
+      max-width: 1180px;
+      margin: 0px;
+      padding-left:30px;
+      padding-top: 5px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ccc;
+      
+    }
+    .menu1{
+           padding-top: 5px;
+           fill: #333;
+          cursor: pointer;
+          padding-left: 0px;
+          order: 0; /* Set the order to 1 to move it to the left */
+          }
+          
+
+    .search-bar {
+      display: flex;
+      align-items: center; /* Align items vertically */
+      flex-grow: 1;
+      margin-right: 3px;
+      border: 20px;
+      padding-left: 300px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .search{
+      color: greenyellow;
+      background-color: black;
+      padding-top: 3px;
+      
+      
+      
+
+    }
+    input[type="search"] {
+        width: 300px;
+        outline: none;
+        padding: 8px;
+        border: 1px solid whitesmoke;
+        border-radius: 30px;
+        outline: none;
+         margin-right: 10px; /* Add right margin between input and button */
+        align-items: center;
+        justify-content: center;
+    }
+    
+  
+        .logo {
+            font-size: 24px;
+            
+          }
+          
+          .notification-bell {
+            position: relative;
+            cursor: pointer;
+            padding-top: 10px;
+            
+            
+           
+          }
+          
+          
+          .icon {
+            font-size: 16px;
+            padding-left: 100px;
+            
+          }
+          
+          .badge {
+            position: absolute;
+            top: -2px;
+            font-weight: 900;
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            right: -1px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 0px;
+           
+            
+          }
+          
+    a{
+      font-style: normal;
+      font-size: 13px;
+      margin: 0px;
+      padding: 0;
+      box-sizing: border-box;
+      line-height: 1.5;
+      font-weight: 100;
+      font-family: 'Poppins', sans-serif;
+      color: black;
+      text-decoration: none;
+    }
+    i{
+      margin-right: 5px;
+    }
+
+    .menu-item {
+    position: relative;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.menu-item:hover .dropdown {
+    display: block;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    background-color: white;
+    color: black;
+    right: 0; /* Position the dropdown to the left */
+    min-width: 150px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {
+    background-color: #ddd;
+}
+    
+            
+        
+      .footer {
+        background-color:white;
+        color: black;
+        text-align: center;
+        padding: 0px;
+        bottom: 0;
+        width: 100%;
+        overflow: hidden;
+        height: 40px;
+        padding-left: 0px;
+        box-shadow: 10px;
+        padding-bottom: 5px;
+        padding-top: 5px;
+      }
+      
+      .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: rgb(219, 235, 229);
+    }
+    
+  .grid {
+    margin-left: 10px;
+    display: grid;
+    gap: 0.0rem;
+    display: flex;
+  }
+
+  .flex {
+    display: flex;
+    align-items: center;
+    margin: 10px;
+  }
+
+  .rounded {
+    border-radius: 0.5rem;
+  }
+
+  .p-4 {
+    padding: 1rem;
+  }
+
+  .bg-white {
+    background-color: #fff;
+  }
+
+  .h-16 {
+    height: 4rem;
+  }
+
+  .w-16 {
+    width: 4rem;
+  }
+
+  .text-xl {
+    font-size: 1.25rem;
+  }
+
+  .font-bold {
+    font-weight: bold;
+  }
+
+  .text-gray-500 {
+    color: #6b7280;
+  }
+
+  .text-green-500 {
+    color: #10b981;
+  }
+
+  .text-red-500 {
+    color: #ef4444;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+  }
+
+  .font-semibold {
+    font-weight: 600;
+  }
+
+  .ml-4 {
+    margin-left: 1rem;
+  }
+
+  .ml-2 {
+    margin-left: 0.5rem;
+  }
+
+  .bg-green-200 {
+    background-color: #bbf7d0;
+  }
+
+  .bg-red-200 {
+    background-color: #fecaca;
+  }
+
+  .fill-current {
+    fill: currentColor;
+  }
+
+  .text-green-700 {
+    color: #047857;
+  }
+
+  .text-gray-500 {
+        color: #718096; /* Adjust color as needed */
+    }
+
+    .text-green-500 {
+        color: #38a169; /* Adjust color as needed */
+    }
+
+    .text-red-500 {
+        color: #e53e3e; /* Adjust color as needed */
+    }
+
+    .text-xl {
+        font-size: 1.25rem; /* Adjust size as needed */
+        line-height: 1.75rem; /* Adjust line height as needed */
+        font-weight: 600;
+    }
+
+    .font-bold {
+        font-weight: 700;
+    }
+
+    .text-sm {
+        font-size: 0.875rem; /* Adjust size as needed */
+    }
+
+    .ml-2 {
+        margin-left: 0.5rem;
+    }
+
+    .ml-4 {
+        margin-left: 1rem;
+    }
+
+    .ml-8 {
+        margin-left: 2rem;
+    }
+
+    .ml-auto {
+        margin-left: auto;
+    }
+
+    .fill-current {
+        fill: currentColor;
+    }
+
+    .hover\:fill-current:hover {
+        fill: currentColor;
+    }
+
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+
+    .hover\:bg-gray-200:hover {
+        background-color: #edf2f7; /* Adjust color as needed */
+    } 
+    
+    .col-6j{
+      size: 2px;
+      color: greenyellow;
+    }
+    .col-j4{
+      padding-left: 70px;
+    }
+ /* Charts styles */
+  .chart-container {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    padding: 0px;
+    width: 640px;
+    margin-bottom: 1rem;
+  }
+  .chart-card {
+    width: 100%;
+    height: 400px;
+    padding: 0px;
+    margin: 0px;
+    border-radius: 15px;
+    background-color: #ffffff;
+    margin-bottom: 20px; /* Adding margin between cards */
+  }
+  .form-container {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #f9f9f9;
+    }
+    .form-input{
+      width: calc(100% - 22px);
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    input[type="submit"] {
+      padding: 10px 20px;
+      align-items: center;
+      border-radius: 10px;
+      justify-content: center;
+      background-color: #10b981;
+    }
+  .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 30px;
+      width: 100%;
+      height: 900px;
+      overflow: auto;
+      background-color: rgb(0,0,0);
+      background-color: rgba(0,0,0,0.4);
+      padding-top: 60px;
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-update {
+      padding: 0px 10px;
+      
+      color: rgb(153, 40, 40);
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      color: #0056b3;
+    }
+  .weather-card {
+    height: auto;
+    width: 300px; /* Adjusted width */
+    background-color: #ffffff;
+    border-radius: 15px;
+    margin-bottom: 20px; /* Adding margin between cards */
+  }
+  .grid-cols-1 {
+    display: flex;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px; /* Adjust the gap between cards */
+  }
+  .weather-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+  }
+  .weather-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px 0;
+
+  }
+  .weather-temp {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #ee2e0c;
+
+  }
+  .weather-desc {
+    font-size: 1.2rem;
+    color: #770d60;
+    margin: 5px 0;
+    text-transform: capitalize;
+  }
+  .weather-extra {
+    display: block;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .weather-detail {
+      margin: 5px 0;
+    }
+
+    .weather-date{
+       color: #e53e3e;
+      margin: 10px 0;
+      font-size: 1em;
+      font-weight: 600;
+    }
+    .weather-location {
+      margin: 10px 0;
+      font-size: 1em;
+      font-weight: 600;
+      color: #3e57e5;
+    }
+    .weather-info {
+    font-size: 11px; /* Adjust font size as needed */
+    display: block;
+            margin-bottom: 5px;
+}
+        #weather-humidity {
+            color: #4CAF50;
+        }
+
+        #weather-wind {
+            color: #2196F3;
+        }
+        
+        /* Style for the map container */
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px; /* Space between address form and map */
+            border: 1px solid #ccc; /* Border around map */
+        }
+        /* Container for the address form */
+        .mapcontainer {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Center the address form */
+        .address-form {
+            text-align: center;
+            margin-bottom: 20px; /* Space below address form */
+        }
+        /* Style for the address input field */
+        .address-input {
+            width: 85%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        /* Style for the show map button */
+        .show-map-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .show-map-btn:hover {
+            background-color: #45a049;
+        }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+  <!-- Brand/logo -->
+  <a class="navbar-brand" href="#">
+      <!-- Logo image -->
+      <img src="mkulima-high-resolution-logo-black-transparent.png" alt="Mkulima Logo" width="150" height="auto">
+  </a>
+  <h6 style="padding-left: 15px; margin-top: 10px; font-weight: 100;color: green;">MAIN NAVIGATION</h6>
+  <pre> </pre>
+  <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+  <a href="#"><i class="fas fa-calendar-alt"></i> Schedule</a>
+  <a href="#"><i class="fas fa-tasks"></i> Tasks</a>
+  <button class="collapsible"><i class="fas fa-seedling"></i> Planting</button>
+  <div class="content-collapsible">
+      <a href="#">Add crops</a>
+      <a href="#">Crop rotation</a>
+  </div>
+  <button class="collapsible"><i class="fas fa-paw"></i> Livestock</button>
+  <div class="content-collapsible">
+      <a href="#">Add animal</a>
+      <a href="#">Grazing</a>
+  </div>
+
+
+  <a href="calendar.html"><i class="fas fa-calendar-alt"></i> Calendar</a>
+  <a href="#"><i class="fas fa-project-diagram"></i> Projects</a>
+  <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
+  <a href="#"><i class="fas fa-map"></i><span>Farm Map</span></a>
+  <a href="#"><i class="fas fa-address-book"></i> Contacts</a>
+  <button class="collapsible"><i class="fas fa-users"></i> Workers</button>
+  <div class="content-collapsible">
+      <a href="#">View Workers</a>
+      <a href="#">Add Worker</a>
+  </div>
+  <button class="collapsible"><i class="fas fa-clipboard"></i> Records</button>
+  <div class="content-collapsible">
+      <a href="#">View Records</a>
+      <a href="#">Add Record</a>
+  </div>
+</div>
+  
+
+  <!-- Content -->
+  <div class="content">
+      <div class="topbar">
+        <div class="menu1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+          </svg>
+        </div>
+        
+            <div class="search-bar">
+              
+              <input type="search" placeholder="Search...">
+            </div>
+        
+            <div class="top-bar">
+                
+                <div class="notification-bell">
+                  <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                  </svg></span>
+                  <span class="badge">3</span>
+                </div>
+              </div>
+              
+              <div class="content">
+                <!-- Your dashboard content goes here -->
+              </div>
+      <!-- Profile button with space for profile picture -->
+      <div class="menu-item" id="profile">
+        <i class="fas fa-user-circle"></i> <!-- Font Awesome icon for user profile -->
+        <div class="dropdown" id="profile-dropdown">
+            <a href="#">Edit Profile</a>
+            <a href="#">View Status</a>
+            <a href="#">Other Feature</a>
+        </div>
+    </div>
+    
+
+    <div class="menu-item" id="settings">
+       <i class="fas fa-cog"></i> <!-- Font Awesome icon for settings -->
+      <div class="dropdown" id="settings-dropdown">
+          <a href="#">Change Password</a>
+          <a href="#">Notification Settings</a>
+          <a href="#">Privacy Settings</a>
+      </div>
+  </div>
+
+   
+   
+    
+</div>
+
+<div class="dash">
+  <i class="fas fa-home"></i> Dashboard>>Manager's Dashboard
+</div>
+  <!-- Main content goes here -->
+  <div class="container">
+
+    <!-- Component Start -->
+	<div class="grid lg:grid-cols-3 md:grid-cols-2 gap-6 w-full max-w-6xl">
+		
+		<!-- Tile 1 -->
+		<div class="flex items-center p-4 bg-white rounded">
+			<div class="flex flex-shrink-0 items-center justify-center bg-green-200 h-16 w-16 rounded">
+				<svg class="w-6 h-6 fill-current text-green-700"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+				  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+				</svg>
+			</div>
+			<div class="flex-grow flex flex-col ml-4">
+				<span class="text-xl font-bold">$8,430</span>
+				<div class="flex items-center justify-between">
+					<span class="text-gray-500">Revenue last 30 days</span>
+					<span class="text-green-500 text-sm font-semibold ml-2">+12.6%</span>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Tile 2 -->
+		<div class="flex items-center p-4 bg-white rounded">
+			<div class="flex flex-shrink-0 items-center justify-center bg-red-200 h-16 w-16 rounded">
+				<svg class="w-6 h-6 fill-current text-red-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+				  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+				</svg>
+			</div>
+			<div class="flex-grow flex flex-col ml-4">
+				<span class="text-xl font-bold">211</span>
+				<div class="flex items-center justify-between">
+					<span class="text-gray-500">Sales last 30 days</span>
+					<span class="text-red-500 text-sm font-semibold ml-2">-8.1%</span>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Tile 3 -->
+		<div class="flex items-center p-4 bg-white rounded">
+			<div class="flex flex-shrink-0 items-center justify-center bg-green-200 h-16 w-16 rounded">
+				<svg class="w-6 h-6 fill-current text-green-700"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+				  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+				</svg>
+			</div>
+			<div class="flex-grow flex flex-col ml-4">
+				<span class="text-xl font-bold">140</span>
+				<div class="flex items-center justify-between">
+					<span class="text-gray-500">Customers last 30 days</span>
+					<span class="text-green-500 text-sm font-semibold ml-2">+28.4%</span>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	<!-- Component End  -->
+
+  <!-- Charts and graphs -->
+  <div class="container mx-auto py-8" style="margin-left: -20px;">
+    <div class="grid gap-4 grid-cols-1 lg:grid-cols-3">
+      <div class="weather-card bg-white rounded-lg shadow-lg p-4">
+        <div class="weather-details">
+          <div class="weather-detail" id="weather-location">...</div>
+          <div class="weather-detail" id="weather-date">...</div>
+
+          <img src="" alt="Weather Icon" class="weather-icon" id="weather-icon">
+          <div class="weather-temp weather-detail" id="weather-temp">...</div> <pre> </pre>
+          <div class="weather-desc weather-detail" id="weather-desc">...</div> <pre> </pre>
+          <div class="weather-extra weather-detail">
+            <div id="weather-humidity">Humidity: </div> <br>
+            <div id="weather-wind">Wind: </div>
+          </div>
+          
+        </div>
+      </div>
+      <div class="chart-card bg-white rounded-lg shadow-lg p-4">
+        <button class="btn-update" id="fillMenuButton" >Update</button>
+
+        <div id="myModal" class="modal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Update Chart Values</h2>
+            <form id="updateForm">
+              <label for="farmAValues">Farm A Values (comma-separated):</label>
+              <input type="text" id="farmAValues" class="form-input" name="farmAValues"><br><br>
+              <label for="farmBValues">Farm B Values (comma-separated):</label>
+              <input type="text" id="farmBValues" class="form-input" name="farmBValues"><br><br>
+              <center><input type="submit" value="Update Chart"></center>
+            </form>
+          </div>
+        </div>
+        <div id="chartline" class="chart-container"></div>
+      </div>
+      <div class="chart-card bg-white rounded-lg shadow-lg p-4">
+        <center>
+          <div>
+            <p style="margin-top: 10px;font-weight: 600;">Crop Production</p>
+            <div id="chartpie" class="chart-container" style="margin-top: 30px;width: 300px;"></div>
+          </div>
+        </center>
+      </div>
+    </div>
+  </div>
+
+   <!-- Charts End  -->
+
+
+   <!-- Map -->
+
+   <div class="mapcontainer">
+    <!-- Address input form -->
+    <form id="addressForm" class="address-form">
+        <input type="text" id="addressInput" class="address-input" placeholder="Enter  your address e.g., 123 Main St, City, Country">
+        <button type="button" class="show-map-btn" onclick="geocodeAndDisplay()">Show on Map</button>
+    </form>
+    <!-- Map container -->
+    <div id="map"></div>
+  </div>
+   
+
+   
+
+</div>
+<!--Footer-->
+    
+  </div>
+  <footer class="footer">
+    <p>&copy; 2024 Mkulima FMS. All rights reserved.</p>
+  </footer>
+  
+  <!-- JavaScript for collapsible behavior -->
+  <script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+  </script>
+
+  <!-- Removed duplicate script tag -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Leaflet Control Geocoder JavaScript -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script>
+        var map = L.map('map').setView([0, 0], 2); // Default view at world level, adjust as needed
+
+        // Add a base map layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, // Adjust maxZoom as needed
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var marker;
+
+        function geocodeAndDisplay() {
+            var address = document.getElementById('addressInput').value;
+
+            // Use Nominatim geocoder from OpenStreetMap
+            var geocoder = L.Control.Geocoder.nominatim();
+            geocoder.geocode(address, function(results) {
+                if (results.length > 0) {
+                    var latlng = results[0].center;
+                    map.setView(latlng, 16); // Zoom level 16, adjust as needed
+
+                    // Clear previous markers if any
+                    if (typeof marker !== 'undefined') {
+                        map.removeLayer(marker);
+                    }
+
+                    // Add marker and popup
+                    marker = L.marker(latlng).addTo(map);
+                    marker.bindPopup(`<b>${results[0].name}</b><br>${results[0].display_name}`).openPopup();
+                } else {
+                    alert('Address not found.');
+                }
+            });
+        }
+    </script>
+
+  
+
+
+
+<script>
+  // Function to fetch weather data from OpenWeatherMap API
+  async function fetchWeather(lat, lon) {
+      const apiKey = '2d17480e1fe8ac83d2ff8c0f22e718b9'; // Replace with your OpenWeatherMap API key
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        // Update the weather card with fetched data
+        document.getElementById('weather-icon').src = getWeatherImage(data.weather[0].icon);
+        document.getElementById('weather-temp').textContent = `${data.main.temp}°C`;
+        document.getElementById('weather-desc').textContent = data.weather[0].description;
+
+        // Display humidity and wind on separate lines with reduced font size
+        const humidityElement = document.getElementById('weather-humidity');
+        humidityElement.innerHTML = `Humidity: ${data.main.humidity}%`;
+        humidityElement.style.fontSize = '12px'; // Adjust font size as needed
+        humidityElement.style.display = 'block'; // Ensure each piece of info is on a new line
+
+        const windElement = document.getElementById('weather-wind');
+        windElement.innerHTML = `Wind: ${data.wind.speed} km/h`;
+        windElement.style.fontSize = '12px'; // Adjust font size as needed
+        windElement.style.display = 'block'; // Ensure each piece of info is on a new line
+
+        // Format date in the desired format: "Monday, 26 Aug 2024"
+        const date = new Date(data.dt * 1000);
+        const options = {  year: 'numeric', month: 'short', day: 'numeric' };
+        const formattedDate = date.toLocaleDateString('en-US', options);
+        document.getElementById('weather-date').textContent = formattedDate;
+
+        document.getElementById('weather-location').textContent = `${data.name}, ${data.sys.country}`;
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+        document.getElementById('weather-temp').textContent = 'Error';
+        document.getElementById('weather-desc').textContent = 'Unable to fetch data';
+      }
+    }
+
+    // Function to get weather image based on weather icon code
+    function getWeatherImage(iconCode) {
+      const iconMap = {
+        '01d': 'https://cdn-icons-png.flaticon.com/128/4814/4814268.png',
+        '01n': 'https://cdn-icons-png.flaticon.com/128/8030/8030068.png',
+        '02d': 'https://cdn-icons-png.flaticon.com/128/3104/3104619.png',
+        '02n': 'https://cdn-icons-png.flaticon.com/128/16141/16141717.png',
+        '03d': 'https://cdn-icons-png.flaticon.com/128/414/414927.png',
+        '03n': 'https://cdn-icons-png.flaticon.com/128/414/414927.png',
+        '04d': 'https://cdn-icons-png.flaticon.com/128/414/414927.png',
+        '04n': 'https://cdn-icons-png.flaticon.com/128/3845/3845731.png',
+        '09d': 'https://cdn-icons-png.flaticon.com/128/3093/3093390.png',
+        '09n': 'https://cdn-icons-png.flaticon.com/128/4735/4735072.png',
+        '10d': 'https://cdn-icons-png.flaticon.com/128/4724/4724094.png',
+        '10n': 'https://cdn-icons-png.flaticon.com/128/3937/3937259.png',
+        '11d': 'https://cdn-icons-png.flaticon.com/128/3445/3445722.png',
+        '11n': 'https://cdn-icons-png.flaticon.com/128/1146/1146799.png',
+        '13d': 'https://cdn-icons-png.flaticon.com/128/642/642000.png',
+        '13n': 'https://cdn-icons-png.flaticon.com/128/2480/2480636.png',
+        '50d': 'https://cdn-icons-png.flaticon.com/128/2675/2675962.png',
+        '50n': 'https://cdn-icons-png.flaticon.com/128/106/106052.png',
+      };
+      return iconMap[iconCode] || 'https://example.com/images/default.png';
+    }
+
+    // Function to get user's current location and fetch weather data
+    function getLocationAndFetchWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          fetchWeather(lat, lon);
+        }, error => {
+          console.error('Error getting location:', error);
+          document.getElementById('weather-temp').textContent = 'Error';
+          document.getElementById('weather-desc').textContent = 'Unable to fetch location';
+        });
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+        document.getElementById('weather-temp').textContent = 'Error';
+        document.getElementById('weather-desc').textContent = 'Geolocation not supported';
+      }
+    }
+
+    // Call the function to get location and fetch weather data when the page loads
+    window.onload = getLocationAndFetchWeather;
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initial data for the Line and Area Chart
+      var optionsLine = {
+        series: [
+          {
+            name: 'FARM A',
+            type: 'area',
+            data: [44, 55, 31, 47, 31, 43, 26, 41, 31, 47, 33, 24]
+          },
+          {
+            name: 'FARM B',
+            type: 'line',
+            data: [55, 69, 45, 61, 43, 54, 37, 52, 44, 61, 43, 30]
+          }
+        ],
+        chart: {
+          height: 350,
+          type: 'line',
+          zoom: {
+            enabled: false
+          }
+        },
+        stroke: {
+          curve: 'smooth'
+        },
+        fill: {
+          type: 'solid',
+          opacity: 0.85 // Adjusted opacity for both series
+        },
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        markers: {
+          size: 0
+        },
+        yaxis: [
+          {
+            title: {
+              text: 'Expense',
+            },
+          },
+          {
+            opposite: true,
+            title: {
+              text: 'Income',
+            },
+          },
+        ],
+        tooltip: {
+          shared: true,
+          intersect: false,
+          y: {
+            formatter: function (y) {
+              if (typeof y !== "undefined") {
+                return y.toFixed(0) + " Dollars";
+              }
+              return y;
+            }
+          }
+        }
+      };
+    
+      var chartLine = new ApexCharts(document.querySelector("#chartline"), optionsLine);
+      chartLine.render();
+    
+      // Radial Bar Chart
+      var optionsPie = {
+        series: [44, 55, 67, 83, 45],
+        chart: {
+          height: 350,
+          type: 'radialBar',
+        },
+        plotOptions: {
+          radialBar: {
+            dataLabels: {
+              name: {
+                fontSize: '22px',
+              },
+              value: {
+                fontSize: '16px',
+              },
+              legend: {
+                position: 'bottom'
+              },
+              total: {
+                show: true,
+                label: 'Crops',
+                formatter: function (w) {
+                  return 249 + " tonnes"; // Example custom formatter
+                }
+              }
+            }
+          }
+        },
+        labels: ['Apples', 'Oranges', 'Bananas', 'Berries', 'Beans'],
+      };
+    
+      var chartPie = new ApexCharts(document.querySelector("#chartpie"), optionsPie);
+      chartPie.render();
+
+      // Get the modal
+      var modal = document.getElementById("myModal");
+
+      // Get the button that opens the modal
+      var btn = document.getElementById("fillMenuButton");
+
+      // Get the <span> element that closes the modal
+      var span = document.getElementsByClassName("close")[0];
+
+      // When the user clicks the button, open the modal 
+      btn.onclick = function() {
+        modal.style.display = "block";
+      }
+
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      // Function to update the Line Chart data
+      function updateLineChartData(newData) {
+        chartLine.updateSeries([
+          {
+            name: 'FARM A',
+            type: 'area',
+            data: newData.farmA
+          },
+          {
+            name: 'FARM B',
+            type: 'line',
+            data: newData.farmB
+          }
+        ]);
+      }
+
+      // Handle the form submission
+      document.getElementById("updateForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var farmAValues = document.getElementById("farmAValues").value.split(',').map(Number);
+        var farmBValues = document.getElementById("farmBValues").value.split(',').map(Number);
+
+        var newData = {
+          farmA: farmAValues,
+          farmB: farmBValues
+        };
+
+        updateLineChartData(newData);
+        modal.style.display = "none";
+      });
+    });
+  </script>
+
+  <script>
+    // Dropdown menu functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const profile = document.getElementById('profile');
+      const settings = document.getElementById('settings');
+
+      profile.addEventListener('click', () => {
+        document.getElementById('profile-dropdown').classList.toggle('show');
+      });
+
+      settings.addEventListener('click', () => {
+        document.getElementById('settings-dropdown').classList.toggle('show');
+      });
+
+      window.onclick = (event) => {
+        if (!event.target.matches('.menu-item')) {
+          const dropdowns = document.getElementsByClassName('dropdown');
+          for (let i = 0; i < dropdowns.length; i++) {
+            const openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+              openDropdown.classList.remove('show');
+            }
+          }
+        }
+      };
+    });
+  </script>
+</body>
+</html>

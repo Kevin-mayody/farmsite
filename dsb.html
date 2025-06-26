@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Charts with ApexCharts</title>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0,0,0);
+      background-color: rgba(0,0,0,0.4);
+      padding-top: 60px;
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button id="fillMenuButton">Fill Menu</button>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Update Chart Values</h2>
+      <form id="updateForm">
+        <label for="farmAValues">Farm A Values (comma-separated):</label>
+        <input type="text" id="farmAValues" name="farmAValues"><br><br>
+        <label for="farmBValues">Farm B Values (comma-separated):</label>
+        <input type="text" id="farmBValues" name="farmBValues"><br><br>
+        <input type="submit" value="Update Chart">
+      </form>
+    </div>
+  </div>
+
+  <div id="chartline" style="max-width: 650px; margin: 35px auto;"></div>
+  <div id="chartpie" style="max-width: 650px; margin: 35px auto;"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initial data for the Line and Area Chart
+      var optionsLine = {
+        series: [
+          {
+            name: 'FARM A',
+            type: 'area',
+            data: [44, 55, 31, 47, 31, 43, 26, 41, 31, 47, 33, 24]
+          },
+          {
+            name: 'FARM B',
+            type: 'line',
+            data: [55, 69, 45, 61, 43, 54, 37, 52, 44, 61, 43, 30]
+          }
+        ],
+        chart: {
+          height: 350,
+          type: 'line',
+          zoom: {
+            enabled: false
+          }
+        },
+        stroke: {
+          curve: 'smooth'
+        },
+        fill: {
+          type: 'solid',
+          opacity: [0.35, 1],
+        },
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        markers: {
+          size: 0
+        },
+        yaxis: [
+          {
+            title: {
+              text: 'Series A',
+            },
+          },
+          {
+            opposite: true,
+            title: {
+              text: 'Series B',
+            },
+          },
+        ],
+        tooltip: {
+          shared: true,
+          intersect: false,
+          y: {
+            formatter: function (y) {
+              if (typeof y !== "undefined") {
+                return y.toFixed(0) + " tonnes";
+              }
+              return y;
+            }
+          }
+        }
+      };
+    
+      var chartLine = new ApexCharts(document.querySelector("#chartline"), optionsLine);
+      chartLine.render();
+    
+      // Radial Bar Chart
+      var optionsPie = {
+        series: [44, 55, 67, 83, 45],
+        chart: {
+          height: 350,
+          type: 'radialBar',
+        },
+        plotOptions: {
+          radialBar: {
+            dataLabels: {
+              name: {
+                fontSize: '22px',
+              },
+              value: {
+                fontSize: '16px',
+              },
+              legend: {
+                position: 'bottom'
+              },
+              total: {
+                show: true,
+                label: 'Crops',
+                formatter: function (w) {
+                  return 249 + " tonnes"; // Example custom formatter
+                }
+              }
+            }
+          }
+        },
+        labels: ['Apples', 'Oranges', 'Bananas', 'Berries', 'Beans'],
+      };
+    
+      var chartPie = new ApexCharts(document.querySelector("#chartpie"), optionsPie);
+      chartPie.render();
+
+      // Get the modal
+      var modal = document.getElementById("myModal");
+
+      // Get the button that opens the modal
+      var btn = document.getElementById("fillMenuButton");
+
+      // Get the <span> element that closes the modal
+      var span = document.getElementsByClassName("close")[0];
+
+      // When the user clicks the button, open the modal 
+      btn.onclick = function() {
+        modal.style.display = "block";
+      }
+
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      // Function to update the Line Chart data
+      function updateLineChartData(newData) {
+        chartLine.updateSeries([
+          {
+            name: 'FARM A',
+            type: 'area',
+            data: newData.farmA
+          },
+          {
+            name: 'FARM B',
+            type: 'line',
+            data: newData.farmB
+          }
+        ]);
+      }
+
+      // Handle the form submission
+      document.getElementById("updateForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var farmAValues = document.getElementById("farmAValues").value.split(',').map(Number);
+        var farmBValues = document.getElementById("farmBValues").value.split(',').map(Number);
+
+        var newData = {
+          farmA: farmAValues,
+          farmB: farmBValues
+        };
+
+        updateLineChartData(newData);
+        modal.style.display = "none";
+      });
+    });
+  </script>
+</body>
+</html>

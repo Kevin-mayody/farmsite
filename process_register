@@ -1,0 +1,63 @@
+<?php
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve form data
+    $email = $_POST["email"];
+    $role = $_POST["role"];
+    $password = $_POST["password"];
+    $confirm_password = $_POST["confirm_password"];
+
+    // Validate form data
+    if ($password !== $confirm_password) {
+        echo "Error: Passwords do not match.";
+        exit();
+    }
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Database connection settings
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "farm_management";
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Insert new farm record to get the auto-generated farm ID
+    $sql = "INSERT INTO farms (farm_name) VALUES ('Default Farm Name')";
+    if ($conn->query($sql) === TRUE) {
+        // Get the auto-generated farm ID
+        $farmId = $conn->insert_id;
+
+        // Prepare and execute SQL statement to insert the new user into the database
+        $sql = "INSERT INTO users (farm_id, email, role, password) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("isss", $farmId, $email, $role, $hashed_password);
+
+        if ($stmt->execute() === TRUE) {
+            // Redirect to login page after successful registration
+            header("Location: login.php?farmId=" . $farmId);
+            exit();
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+
+        $stmt->close();
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+
+    $conn->close();
+} else {
+    // If the form is not submitted, redirect to the registration page
+    header("Location: register.php");
+    exit();
+}
+?>
